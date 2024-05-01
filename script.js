@@ -1,5 +1,5 @@
 function suma (variableA,variableB){
-    if (variableB==''){
+    if (variableB===''){
         variableA = 0;
         return variableA;
     }else{
@@ -28,7 +28,7 @@ function multiplicacion (variableA, variableB){
 }
 
 function división (variableA, variableB){
-    if (variableB==''){
+    if (variableB===''){
         variableA = 0;
         return variableA;
     }else{
@@ -54,8 +54,8 @@ const ce = document.querySelector('#ce');
 
 
 function AccionNumero(valor){
-    if(operator == '0'){
-        if(variableA == 0){
+    if(operator === '0'){
+        if(variableA === '0'){
             variableA = `${valor}`;
         }else{
             variableA += `${valor}`;
@@ -69,15 +69,20 @@ function AccionNumero(valor){
 
 
 function AccionOperador(valor){
-    if(operator=='0'){
+    if(operator==='0'){
         operator=valor;
         banderaPunto=true;
         resultados.textContent=`${variableA}${operator}`;
     }else{
-        AccionIgual();
-        operator=valor;
-        banderaPunto=true;
-        resultados.textContent=`${variableA}${operator}`;
+        if(variableB===''){
+            resultados.textContent=`${variableA}`;
+            operator = '0';
+        }else{
+            AccionIgual(false);
+            operator=valor;
+            banderaPunto=true;
+            resultados.textContent=`${variableA}${operator}`;
+        }
     }
 }
 
@@ -90,38 +95,54 @@ function AccionPunto(){
         }
     }else{
         if(banderaPunto){
-            variableB += '.';
+            if(variableB === ''){
+                variableB = '0.'
+            }else{
+                variableB += '.';
+            }
             banderaPunto = false;
             resultados.textContent=`${variableA}${operator}${variableB}`;
         }
     }
 }
 
-function AccionIgual(){
+function AccionIgual(band){
     switch(operator){
         case '+':
             variableA = `${suma(variableA,variableB)}`;
             operator = '0';
             variableB = '';
             resultados.textContent = `${variableA}`;
+            if(band){
+                variableA ='0';
+            }
             break;
         case '-':
             variableA = `${resta(variableA,variableB)}`;
             operator = '0';
             variableB = '';
             resultados.textContent = `${variableA}`;
+            if(band){
+                variableA ='0';
+            }
             break;
         case '*':
             variableA = `${multiplicacion(variableA,variableB)}`;
             operator = '0';
             variableB = '';
             resultados.textContent = `${variableA}`;
+            if(band){
+                variableA ='0';
+            }
             break;
         case '/':
             variableA = `${división(variableA,variableB)}`;
             operator = '0';
             variableB = '';
             resultados.textContent = `${variableA}`;
+            if(band){
+                variableA ='0';
+            }
             break;
         case '0':
             resultados.textContent = `${variableA}`;
@@ -130,20 +151,37 @@ function AccionIgual(){
 }
 
 function AccionBackErase(){
-    if(operator == '0'){
+    if(operator === '0'){
         let lenght= variableA.length;
+        if(variableA.charAt(variableA.length-1)==='.'){
+            banderaPunto = true;
+        }
         variableA = variableA.substring(0,lenght-1);
-        if(variableA == ''){
+        if(variableA === ''){
             variableA = '0';
         }
         resultados.textContent = `${variableA}`;
+    }else if(variableB === ''){
+        operator = '0';
+        resultados.textContent = `${variableA}`;
+    }else{
+        let lenght= variableB.length;
+        if(variableB.charAt(variableB.length-1)==='.'){
+            banderaPunto = true;
+        }
+        variableB = variableB.substring(0,lenght-1);
+        if(variableB === ''){
+            variableB = '';
+        }
+        resultados.textContent = `${variableA}${operator}${variableB}`;
     }
-}
+    }
 
 function AccionCe(){
     variableA = '0';
     variableB = '';
     operator = '0';
+    banderaPunto = true;
     resultados.textContent=`${variableA}`;
 }
 
@@ -187,7 +225,7 @@ function TeclaIgual(){
     boton.textContent = '=';
     botones.appendChild(boton);
     boton.addEventListener('click',()=>{
-        AccionIgual();
+        AccionIgual(true);
     });
 }
 
@@ -281,6 +319,9 @@ for(i=0;i<16;i++){
                 case '8':
                     AccionNumero(8);
                     break;
+                case '9':
+                    AccionNumero(9);
+                    break;
                 case '.':
                     AccionPunto();
                     break;
@@ -303,7 +344,7 @@ for(i=0;i<16;i++){
                     AccionOperador('-');
                     break;
                 case 'Enter':
-                    AccionIgual();
+                    AccionIgual(true);
                     break;
             }
         })
